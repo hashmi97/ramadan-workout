@@ -1,8 +1,7 @@
 import { addDays, format, parseISO } from 'date-fns'
 import { DayCard } from './DayCard'
+import { PLAN_START_DATE, PLAN_DAYS_COUNT } from '../constants/planTemplates'
 import type { PlanDay } from '../types'
-
-const PLAN_START = '2026-02-22'
 
 function buildDateToPlanDay(planDays: PlanDay[]): Map<string, PlanDay> {
   const map = new Map<string, PlanDay>()
@@ -14,8 +13,8 @@ function buildDateToPlanDay(planDays: PlanDay[]): Map<string, PlanDay> {
 
 function getPlannedDates(): string[] {
   const dates: string[] = []
-  const start = parseISO(PLAN_START)
-  for (let i = 0; i < 28; i++) {
+  const start = parseISO(PLAN_START_DATE)
+  for (let i = 0; i < PLAN_DAYS_COUNT; i++) {
     dates.push(format(addDays(start, i), 'yyyy-MM-dd'))
   }
   return dates

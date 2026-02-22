@@ -1,7 +1,8 @@
 import type { PlanType, GymType } from '../types'
 
 export const PLAN_START_DATE = '2026-02-22'
-export const PLAN_DAYS_COUNT = 28
+export const PLAN_END_DATE = '2026-03-18'
+export const PLAN_DAYS_COUNT = 25
 
 export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6 // Sun=0, Mon=1, etc.
 
