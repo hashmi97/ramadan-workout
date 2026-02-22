@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
-import { getWorkoutBySlug } from '../constants/workoutRegistry'
+import { getWorkoutBySlug, WORKOUT_DESCRIPTIONS } from '../constants/workoutRegistry'
 
 const IMAGE_BASE = '/workouts'
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp']
+const NO_DEMO_SLUGS = ['walk-or-bike', 'walk-45-min', 'treadmill-walk']
 
 export function WorkoutDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -21,6 +22,23 @@ export function WorkoutDetail() {
         <Link to="/dashboard" className="text-amber-600 hover:underline">
           Back to dashboard
         </Link>
+      </div>
+    )
+  }
+
+  if (NO_DEMO_SLUGS.includes(workout.slug)) {
+    return (
+      <div className="min-h-screen bg-stone-50">
+        <header className="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between">
+          <Link to="/dashboard" className="text-stone-600 hover:text-stone-900 text-sm">
+            ← Back
+          </Link>
+          <h1 className="text-lg font-semibold text-stone-900">{workout.name}</h1>
+          <div className="w-10" />
+        </header>
+        <main className="max-w-lg mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
+          <p className="text-stone-600 text-lg text-center">You already know how 😉</p>
+        </main>
       </div>
     )
   }
@@ -47,12 +65,12 @@ export function WorkoutDetail() {
 
       <main className="max-w-lg mx-auto px-4 py-8">
         <div className="bg-white rounded-lg border border-stone-200 overflow-hidden">
-          <div className="aspect-square bg-stone-100 flex items-center justify-center">
+          <div className="aspect-square bg-stone-100 flex items-center justify-center p-4">
             {!imageError ? (
               <img
                 src={imagePath}
                 alt={workout.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 onError={tryNextExtension}
               />
             ) : (
@@ -63,6 +81,11 @@ export function WorkoutDetail() {
           </div>
           <div className="p-4">
             <h2 className="text-xl font-semibold text-stone-900">{workout.name}</h2>
+            {WORKOUT_DESCRIPTIONS[workout.slug] && (
+              <p className="mt-2 text-stone-600 text-sm leading-relaxed">
+                {WORKOUT_DESCRIPTIONS[workout.slug]}
+              </p>
+            )}
           </div>
         </div>
       </main>
