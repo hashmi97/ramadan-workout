@@ -1,20 +1,17 @@
 import { format } from 'date-fns'
-import { signOut } from '../services/auth'
-import { useAuth } from '../hooks/useAuth'
 import { usePlanDays } from '../hooks/usePlanDays'
 import { TodayCard } from '../components/TodayCard'
 import { CalendarGrid } from '../components/CalendarGrid'
 import toast from 'react-hot-toast'
 
 export function Dashboard() {
-  const { user, seeded } = useAuth()
   const {
     planDays,
     loading,
     error,
     updateTaskOptimistic,
     updateGymTypeOptimistic,
-  } = usePlanDays(user?.id ?? null, seeded)
+  } = usePlanDays()
 
   const todayStr = format(new Date(), 'yyyy-MM-dd')
   const todayPlan = planDays.find((pd) => pd.date === todayStr)
@@ -33,16 +30,8 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <header className="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between">
+      <header className="bg-white border-b border-stone-200 px-4 py-3">
         <h1 className="text-lg font-semibold text-stone-900">Ramadan Cut Tracker</h1>
-        <button
-          onClick={() => {
-            signOut().catch(() => toast.error('Failed to sign out'))
-          }}
-          className="text-sm text-stone-600 hover:text-stone-900"
-        >
-          Sign out
-        </button>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-8">

@@ -2,6 +2,7 @@ import { format, parseISO } from 'date-fns'
 import { PLAN_TYPE_LABELS } from '../constants/planTemplates'
 import { ChecklistSection } from './ChecklistSection'
 import { GymSelector } from './GymSelector'
+import { PreIftarExerciseDetails, GymExerciseDetails, WalkExerciseDetails } from './ExerciseDetails'
 import type { PlanDay, PlanType } from '../types'
 
 interface TodayCardProps {
@@ -12,17 +13,10 @@ interface TodayCardProps {
 
 function partitionTasks(planDay: PlanDay) {
   const tasks = planDay.day_tasks ?? []
-  const preIftarKeys = ['warmup', 'round_1', 'round_2', 'round_3', 'round_4', 'round_5', 'core_finisher']
-  const gymKeys = ['main_lifts', 'accessories', 'abs']
   const walkKeys = ['walk_45']
-  const restKeys = ['rest', 'optional_walk']
-
-  const preIftar = tasks.filter((t) => preIftarKeys.includes(t.task_key))
-  const gym = tasks.filter((t) => gymKeys.includes(t.task_key))
   const walk = tasks.filter((t) => walkKeys.includes(t.task_key))
-  const rest = tasks.filter((t) => restKeys.includes(t.task_key))
 
-  return { preIftar, gym, walk, rest }
+  return { walk }
 }
 
 export function TodayCard({
@@ -39,11 +33,8 @@ export function TodayCard({
   }
 
   const date = parseISO(planDay.date)
-  const { preIftar, gym, walk, rest } = partitionTasks(planDay)
-  const allTasks = planDay.day_tasks ?? []
-  const completed = allTasks.filter((t) => t.completed).length
-  const total = allTasks.length
-  const pct = total > 0 ? Math.round((completed / total) * 100) : 0
+  const { walk } = partitionTasks(planDay)
+  const hasPreIftar = planDay.plan_type === 'pre_iftar' || planDay.plan_type === 'pre_iftar_gym'
   const hasGym = planDay.plan_type === 'pre_iftar_gym'
 
   return (
@@ -57,57 +48,35 @@ export function TodayCard({
         </p>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-sm font-medium text-stone-700">Overall</span>
-          <span className="text-sm text-stone-500">{pct}%</span>
-        </div>
-        <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-amber-500 rounded-full transition-all duration-300"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-      </div>
-
-      {preIftar.length > 0 && (
-        <ChecklistSection
-          title="Pre-Iftar Fat Burn"
-          tasks={preIftar}
-          onTaskToggle={onTaskToggle}
-        />
+      {hasPreIftar && (
+        <section className="space-y-2">
+          <h3 className="font-medium text-stone-800">Pre-Iftar Fat-Burn Circuit</h3>
+          <PreIftarExerciseDetails dateStr={planDay.date} />
+        </section>
       )}
 
       {hasGym && (
-        <GymSelector
-          planDayId={planDay.id}
-          value={planDay.gym_type}
-          onSelect={onGymSelect}
-        />
-      )}
-
-      {hasGym && gym.length > 0 && (
-        <ChecklistSection
-          title="Gym After Iftar"
-          tasks={gym}
-          onTaskToggle={onTaskToggle}
-        />
+        <section className="space-y-2">
+          <GymSelector
+            planDayId={planDay.id}
+            value={planDay.gym_type}
+            onSelect={onGymSelect}
+          />
+          {planDay.gym_type && (
+            <GymExerciseDetails gymType={planDay.gym_type} />
+          )}
+        </section>
       )}
 
       {walk.length > 0 && (
-        <ChecklistSection
-          title="Walk"
-          tasks={walk}
-          onTaskToggle={onTaskToggle}
-        />
-      )}
-
-      {rest.length > 0 && (
-        <ChecklistSection
-          title="Rest"
-          tasks={rest}
-          onTaskToggle={onTaskToggle}
-        />
+        <section className="space-y-2">
+          <ChecklistSection
+            title="Walk"
+            tasks={walk}
+            onTaskToggle={onTaskToggle}
+          />
+          <WalkExerciseDetails />
+        </section>
       )}
     </div>
   )

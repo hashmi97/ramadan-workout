@@ -1,7 +1,5 @@
 import type { GymType } from '../types'
 import { GYM_LABELS } from '../constants/planTemplates'
-import { updateGymType } from '../services/taskService'
-import toast from 'react-hot-toast'
 
 interface GymSelectorProps {
   planDayId: string
@@ -13,23 +11,13 @@ interface GymSelectorProps {
 const GYM_OPTIONS: GymType[] = ['A', 'B', 'C']
 
 export function GymSelector({
-  planDayId,
+  planDayId: _planDayId,
   value,
   onSelect,
   readOnly = false,
 }: GymSelectorProps) {
-  async function handleSelect(gymType: GymType) {
-    const prev = value
+  function handleSelect(gymType: GymType) {
     if (onSelect) onSelect(gymType)
-
-    if (readOnly) return
-
-    try {
-      await updateGymType(planDayId, gymType)
-    } catch {
-      toast.error('Failed to save')
-      if (onSelect && prev) onSelect(prev)
-    }
   }
 
   return (

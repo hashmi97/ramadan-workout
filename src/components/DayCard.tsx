@@ -12,21 +12,9 @@ const BADGE_COLORS: Record<PlanType, string> = {
   pre_iftar_gym: 'bg-blue-100 text-blue-800',
   pre_iftar: 'bg-amber-100 text-amber-800',
   walk: 'bg-green-100 text-green-800',
-  rest: 'bg-stone-100 text-stone-600',
-}
-
-function getStatus(pct: number): string {
-  if (pct === 0) return 'Not started'
-  if (pct === 100) return 'Done'
-  return 'In progress'
 }
 
 export function DayCard({ planDay, isToday }: DayCardProps) {
-  const tasks = planDay.day_tasks ?? []
-  const completed = tasks.filter((t) => t.completed).length
-  const total = tasks.length
-  const pct = total > 0 ? Math.round((completed / total) * 100) : 0
-  const status = getStatus(pct)
   const date = parseISO(planDay.date)
 
   return (
@@ -51,16 +39,6 @@ export function DayCard({ planDay, isToday }: DayCardProps) {
       >
         {PLAN_TYPE_LABELS[planDay.plan_type as PlanType]}
       </span>
-      <div className="mt-2 flex items-center justify-between text-xs text-stone-500">
-        <span>{pct}%</span>
-        <span>{status}</span>
-      </div>
-      <div className="mt-1.5 h-1 bg-stone-200 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-amber-500 rounded-full transition-all"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
     </Link>
   )
 }

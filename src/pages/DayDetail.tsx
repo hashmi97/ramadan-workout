@@ -1,13 +1,11 @@
 import { useParams, Navigate, Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
 import { usePlanDays } from '../hooks/usePlanDays'
 import { DayDetailsPanel } from '../components/DayDetailsPanel'
 
 export function DayDetail() {
   const { date } = useParams<{ date: string }>()
-  const { user, seeded } = useAuth()
   const { planDays, loading, updateTaskOptimistic, updateGymTypeOptimistic } =
-    usePlanDays(user?.id ?? null, seeded)
+    usePlanDays()
 
   if (!date) return <Navigate to="/dashboard" replace />
 

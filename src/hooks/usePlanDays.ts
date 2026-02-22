@@ -1,35 +1,35 @@
-import { useEffect, useState } from 'react'
-import { addDays, format, parseISO } from 'date-fns'
-import { fetchPlanDaysWithTasks } from '../services/planService'
-import { PLAN_START_DATE, PLAN_DAYS_COUNT } from '../constants/planTemplates'
+import { useState, useCallback, useEffect } from 'react'
+import { generatePlanDays } from '../data/planData'
+import {
+  getTaskCompleted,
+  setTaskCompleted,
+  getGymType,
+  setGymType,
+} from '../store/completionStore'
 import type { PlanDay } from '../types'
 
-export function usePlanDays(userId: string | null, refetchTrigger?: boolean) {
+export function usePlanDays() {
   const [planDays, setPlanDays] = useState<PlanDay[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  const start = parseISO(PLAN_START_DATE)
-  const endDate = addDays(start, PLAN_DAYS_COUNT - 1)
-  const startStr = PLAN_START_DATE
-  const endStr = format(endDate, 'yyyy-MM-dd')
 
   useEffect(() => {
-    if (!userId) {
-      setPlanDays([])
-      setLoading(false)
-      return
-    }
+    const base = generatePlanDays()
+    const hydrated = base.map((pd) => {
+      const storedGym = getGymType(pd.id)
+      const day_tasks = (pd.day_tasks ?? []).map((t) => ({
+        ...t,
+        completed: getTaskCompleted(t.id) ?? t.completed,
+      }))
+      return {
+        ...pd,
+        gym_type: storedGym ?? pd.gym_type,
+        day_tasks,
+      }
+    })
+    setPlanDays(hydrated)
+  }, [])
 
-    setLoading(true)
-    setError(null)
-    fetchPlanDaysWithTasks(userId, startStr, endStr)
-      .then((data) => setPlanDays(data as PlanDay[]))
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false))
-  }, [userId, startStr, endStr, refetchTrigger])
-
-  function updateTaskOptimistic(taskId: string, completed: boolean) {
+  const updateTaskOptimistic = useCallback((taskId: string, completed: boolean) => {
+    setTaskCompleted(taskId, completed)
     setPlanDays((prev) =>
       prev.map((pd) => ({
         ...pd,
@@ -38,20 +38,21 @@ export function usePlanDays(userId: string | null, refetchTrigger?: boolean) {
         ),
       }))
     )
-  }
+  }, [])
 
-  function updateGymTypeOptimistic(planDayId: string, gymType: 'A' | 'B' | 'C') {
+  const updateGymTypeOptimistic = useCallback((planDayId: string, gymType: 'A' | 'B' | 'C') => {
+    setGymType(planDayId, gymType)
     setPlanDays((prev) =>
       prev.map((pd) =>
         pd.id === planDayId ? { ...pd, gym_type: gymType } : pd
       )
     )
-  }
+  }, [])
 
   return {
     planDays,
-    loading,
-    error,
+    loading: planDays.length === 0,
+    error: null,
     updateTaskOptimistic,
     updateGymTypeOptimistic,
   }
