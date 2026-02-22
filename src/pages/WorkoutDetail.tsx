@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { getWorkoutBySlug, WORKOUT_DESCRIPTIONS } from '../constants/workoutRegistry'
 
-const IMAGE_BASE = `${import.meta.env.BASE_URL}workouts`
+const IMAGE_BASE = 'https://raw.githubusercontent.com/hashmi97/ramadan-workout/dev/public/workouts'
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp']
 const NO_DEMO_SLUGS = ['walk-or-bike', 'walk-45-min', 'treadmill-walk']
 
