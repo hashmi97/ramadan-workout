@@ -7,7 +7,7 @@ import { WorkoutDetail } from './pages/WorkoutDetail'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Passgate>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

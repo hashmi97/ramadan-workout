@@ -36,11 +36,21 @@ VITE_PASSGATE_PASSWORD=your_password
 
 ## Build & Deploy
 
+### GitHub Pages (configured)
+
+1. In your repo: **Settings → Pages → Build and deployment**
+2. Set **Source** to **GitHub Actions**
+3. Push to `dev` — the workflow builds and deploys automatically
+
+**Live URL:** `https://hashmi97.github.io/ramadan-workout/`
+
+### Other hosts
+
 ```bash
 npm run build
 ```
 
-Deploy the `dist` folder to any static host (Netlify, Vercel, GitHub Pages, etc.).
+Deploy the `dist` folder to Netlify, Vercel, etc. For custom domains, set `base: '/'` in `vite.config.ts`.
 
 ## Plan Logic
 
